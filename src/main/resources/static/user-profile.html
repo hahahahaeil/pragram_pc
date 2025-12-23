@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 专业课视频推荐系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-actions a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .header-actions a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input[readonly] {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .edit-mode {
+            display: none;
+        }
+
+        .edit-mode.active {
+            display: block;
+        }
+
+        .view-mode {
+            display: block;
+        }
+
+        .view-mode.hidden {
+            display: none;
+        }
+
+        .info-display {
+            padding: 12px 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #333;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">📚 专业课视频推荐系统</div>
+            <div class="header-actions">
+                <a href="video-list.html">返回首页</a>
+                <a href="index.html">智能助手</a>
+                <a href="#" onclick="logoutUser(); return false;">退出登录</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar" onclick="changeAvatar()">👤</div>
+                <h1 id="displayUsername">用户名</h1>
+                <p>个人中心</p>
+            </div>
+
+            <form id="profileForm">
+                <div class="form-section">
+                    <h2>基本信息</h2>
+                    
+                    <div class="form-group">
+                        <label>账号</label>
+                        <div class="view-mode info-display" id="usernameDisplay">user123</div>
+                        <input type="text" class="edit-mode" id="username" name="username" value="user123" readonly>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <div class="view-mode info-display" id="emailDisplay">user@example.com</div>
+                            <input type="email" class="edit-mode" id="email" name="email" value="user@example.com" placeholder="请输入邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label>手机号</label>
+                            <div class="view-mode info-display" id="phoneDisplay">138****1234</div>
+                            <input type="tel" class="edit-mode" id="phone" name="phone" value="13800138000" placeholder="请输入手机号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>修改密码</label>
+                        <input type="password" class="edit-mode" id="password" name="password" placeholder="留空则不修改密码">
+                    </div>
+                </div>
+
+
+                <div class="form-section">
+                    <h2>账户设置</h2>
+                    <div class="form-group">
+                        <label>注册时间</label>
+                        <div class="info-display" id="createTimeDisplay">--</div>
+                    </div>
+                    <div class="form-group">
+                        <label>账号状态</label>
+                        <div class="info-display" id="statusDisplay">--</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="editBtn" onclick="toggleEdit()">编辑信息</button>
+                    <button type="button" class="btn btn-secondary edit-mode" id="cancelBtn" onclick="cancelEdit()">取消</button>
+                    <button type="submit" class="btn btn-primary edit-mode" id="saveBtn">保存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+        let originalData = {};
+        let currentUser = null;
+
+        // 页面加载时检查登录状态并加载用户信息
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginAndLoadUser();
+        });
+
+        // 检查登录状态并加载用户信息
+        function checkLoginAndLoadUser() {
+            fetch('/api/user/check', {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200 && data.loggedIn) {
+                    // 已登录，加载用户信息
+                    loadUserInfo();
+                } else {
+                    // 未登录，跳转到登录页
+                    alert('请先登录！');
+                    window.location.href = 'user-login.html';
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('检查登录状态失败');
+            });
+        }
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/user/current', {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    currentUser = data.data;
+                    renderUserInfo(data.data);
+                } else {
+                    alert('加载用户信息失败：' + data.message);
+                    window.location.href = 'user-login.html';
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('加载用户信息失败');
+            });
+        }
+
+        // 渲染用户信息
+        function renderUserInfo(user) {
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('usernameDisplay').textContent = user.username || '未设置';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('emailDisplay').textContent = user.email || '未设置';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('phoneDisplay').textContent = user.phone || '未设置';
+            document.getElementById('displayUsername').textContent = user.username || '用户';
+            
+            if (user.createTime) {
+                const createTime = new Date(user.createTime).toLocaleString('zh-CN');
+                document.getElementById('createTimeDisplay').textContent = createTime;
+            }
+            
+            document.getElementById('statusDisplay').textContent = user.status || '正常';
+        }
+
+        function toggleEdit() {
+            isEditMode = !isEditMode;
+            
+            // 切换显示模式
+            document.querySelectorAll('.view-mode').forEach(el => {
+                el.classList.toggle('hidden', isEditMode);
+            });
+            document.querySelectorAll('.edit-mode').forEach(el => {
+                el.classList.toggle('active', isEditMode);
+            });
+
+            if (isEditMode) {
+                // 保存原始数据
+                originalData = {
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value
+                };
+            }
+        }
+
+        function cancelEdit() {
+            // 恢复原始数据
+            document.getElementById('email').value = originalData.email;
+            document.getElementById('phone').value = originalData.phone;
+            
+            toggleEdit();
+        }
+
+        function updateDisplay() {
+            document.getElementById('emailDisplay').textContent = document.getElementById('email').value || '未设置';
+            document.getElementById('phoneDisplay').textContent = document.getElementById('phone').value || '未设置';
+        }
+
+        function changeAvatar() {
+            alert('头像上传功能待实现');
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password') ? document.getElementById('password').value : '';
+            
+            // 调用API保存用户信息
+            const updateData = {
+                email: email,
+                phone: phone
+            };
+            
+            if (password) {
+                updateData.password = password;
+            }
+            
+            fetch('/api/user/profile/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(updateData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    // 更新显示
+                    updateDisplay();
+                    
+                    // 退出编辑模式
+                    isEditMode = false;
+                    document.querySelectorAll('.view-mode').forEach(el => {
+                        el.classList.remove('hidden');
+                    });
+                    document.querySelectorAll('.edit-mode').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    
+                    // 清空密码输入框
+                    const passwordInput = document.getElementById('password');
+                    if (passwordInput) {
+                        passwordInput.value = '';
+                    }
+                    
+                    alert('信息保存成功！');
+                    
+                    // 重新加载用户信息
+                    loadUserInfo();
+                } else {
+                    alert('保存失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('保存失败，请检查后端服务');
+            });
+        });
+
+        // 用户退出登录
+        function logoutUser() {
+            if (!confirm('确定要退出登录吗？')) return;
+            fetch('/api/user/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('退出成功！');
+                    window.location.href = 'video-list.html';
+                } else {
+                    alert('退出失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                window.location.href = 'video-list.html';
+            });
+        }
+    </script>
+</body>
+</html>
+

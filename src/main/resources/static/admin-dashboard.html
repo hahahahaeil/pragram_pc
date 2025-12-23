@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理 - 专业课视频推荐系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-actions a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .header-actions a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f5f5f5;
+            color: #1976d2;
+            border-left-color: #1976d2;
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            border-left-color: #1976d2;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #333;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1976d2;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: #1976d2;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .close {
+            color: #999;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #1976d2;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 15px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #f5f5f5;
+            border-color: #1976d2;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            padding: 8px 15px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ 专业课视频推荐系统 - 后台管理</h1>
+        <div class="header-actions">
+            <a href="video-list.html">返回首页</a>
+            <a href="#" onclick="logoutAdmin()">退出登录</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="users">👥 用户管理</a></li>
+                <li><a href="#" data-section="videos">🎬 视频管理</a></li>
+                <li><a href="#" data-section="settings">⚙️ 系统设置</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- 用户管理部分 -->
+            <div class="content-section" id="users-section">
+                <div class="section-header">
+                    <h2>用户管理</h2>
+                    <button class="btn btn-primary" onclick="openUserModal()">+ 添加用户</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="userSearchInput" placeholder="搜索用户名、邮箱或手机号..." onkeypress="if(event.key==='Enter') searchUsers()">
+                    <button class="btn btn-secondary" onclick="searchUsers()">搜索</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>邮箱</th>
+                                <th>手机号</th>
+                                <th>注册时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- 动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="userPagination"></div>
+            </div>
+
+            <!-- 视频管理部分 -->
+            <div class="content-section hidden" id="videos-section">
+                <div class="section-header">
+                    <h2>视频管理</h2>
+                    <button class="btn btn-primary" onclick="openVideoModal()">+ 上传视频</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="videoSearchInput" placeholder="搜索视频标题、作者..." onkeypress="if(event.key==='Enter') searchVideos()">
+                    <button class="btn btn-secondary" onclick="searchVideos()">搜索</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>视频标题</th>
+                                <th>作者</th>
+                                <th>分类</th>
+                                <th>时长</th>
+                                <th>播放量</th>
+                                <th>上传时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="videoTableBody">
+                            <!-- 动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="videoPagination"></div>
+            </div>
+
+            <!-- 系统设置部分 -->
+            <div class="content-section hidden" id="settings-section">
+                <div class="section-header">
+                    <h2>系统设置</h2>
+                </div>
+                <form id="adminSettingsForm">
+                    <div class="form-group">
+                        <label>管理员账号</label>
+                        <input type="text" id="adminUsername" name="username" placeholder="请输入管理员账号" required>
+                    </div>
+                    <div class="form-group">
+                        <label>管理员密码</label>
+                        <input type="password" id="adminPassword" name="password" placeholder="请输入新密码（留空则不修改）">
+                    </div>
+                    <div class="form-group">
+                        <label>确认密码</label>
+                        <input type="password" id="adminPasswordConfirm" placeholder="请再次输入密码">
+                    </div>
+                    <div style="margin-top: 25px;">
+                        <button type="submit" class="btn btn-primary">保存设置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户编辑模态框 -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">添加用户</h3>
+                <span class="close" onclick="closeUserModal()">&times;</span>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId" name="id">
+                <div class="form-group">
+                    <label>用户名 *</label>
+                    <input type="text" id="userUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>密码 *</label>
+                    <input type="password" id="userPassword" name="password" placeholder="新增用户必填，编辑时留空则不修改">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="userEmail" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>手机号</label>
+                        <input type="tel" id="userPhone" name="phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>状态</label>
+                    <select id="userStatus" name="status">
+                        <option value="正常">正常</option>
+                        <option value="已禁用">已禁用</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 视频编辑模态框 -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="videoModalTitle">上传视频</h3>
+                <span class="close" onclick="closeVideoModal()">&times;</span>
+            </div>
+            <form id="videoForm">
+                <input type="hidden" id="videoId" name="id">
+                <div class="form-group">
+                    <label>视频标题 *</label>
+                    <input type="text" id="videoTitle" name="title" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>作者 *</label>
+                        <input type="text" id="videoAuthor" name="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label>分类 *</label>
+                        <select id="videoCategory" name="category" required>
+                            <option value="">请选择</option>
+                            <option value="编程基础">编程基础</option>
+                            <option value="数据结构">数据结构</option>
+                            <option value="系统原理">系统原理</option>
+                            <option value="前端开发">前端开发</option>
+                            <option value="数据分析">数据分析</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>时长 *</label>
+                        <input type="text" id="videoDuration" name="duration" placeholder="如：02:15:30" required>
+                    </div>
+                    <div class="form-group">
+                        <label>播放量</label>
+                        <input type="number" id="videoPlayCount" name="playCount" value="0" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>状态</label>
+                    <select id="videoStatus" name="status">
+                        <option value="已发布">已发布</option>
+                        <option value="待审核">待审核</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>封面URL</label>
+                    <input type="url" id="videoCoverUrl" name="coverUrl" placeholder="视频封面图片链接">
+                </div>
+                <div class="form-group">
+                    <label>视频URL</label>
+                    <input type="url" id="videoVideoUrl" name="videoUrl" placeholder="视频观看链接">
+                </div>
+                <div class="form-group">
+                    <label>视频介绍</label>
+                    <textarea id="videoDescription" name="description" placeholder="请输入视频介绍"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeVideoModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentUserPage = 1;
+        let currentVideoPage = 1;
+        let userSearchKeyword = '';
+        let videoSearchKeyword = '';
+        const pageSize = 10;
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查管理员登录状态
+            checkAdminLogin();
+        });
+
+        // 检查管理员登录状态
+        function checkAdminLogin() {
+            fetch('/api/admin/check', {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200 && data.loggedIn) {
+                    // 已登录，加载数据
+                    loadUsers();
+                    loadVideos();
+                    loadAdminInfo();
+                } else {
+                    // 未登录，跳转到登录页
+                    alert('请先登录！');
+                    window.location.href = 'admin-login.html';
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('检查登录状态失败');
+            });
+        }
+
+        // ========== 用户管理 ==========
+        function loadUsers(page = 1) {
+            currentUserPage = page;
+            const keyword = userSearchKeyword ? `&keyword=${encodeURIComponent(userSearchKeyword)}` : '';
+            fetch(`/admin/user/list?current=${page}&size=${pageSize}${keyword}`, {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        renderUserTable(data.data);
+                        renderUserPagination(data.total, page);
+                    } else {
+                        alert('加载用户列表失败：' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('加载用户列表失败，请检查后端服务是否启动');
+                });
+        }
+
+        function renderUserTable(users) {
+            const tbody = document.getElementById('userTableBody');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id || ''}</td>
+                    <td>${user.username || ''}</td>
+                    <td>${user.email || '未设置'}</td>
+                    <td>${user.phone || '未设置'}</td>
+                    <td>${user.createTime ? new Date(user.createTime).toLocaleString('zh-CN') : ''}</td>
+                    <td><span class="status-badge ${user.status === '正常' ? 'status-active' : 'status-inactive'}">${user.status || '正常'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-edit" onclick="editUser(${user.id})">编辑</button>
+                            <button class="btn-sm btn-delete" onclick="deleteUser(${user.id})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderUserPagination(total, current) {
+            const totalPages = Math.ceil(total / pageSize);
+            const pagination = document.getElementById('userPagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            pagination.innerHTML = `
+                <button onclick="loadUsers(1)" ${current === 1 ? 'disabled' : ''}>首页</button>
+                <button onclick="loadUsers(${current - 1})" ${current === 1 ? 'disabled' : ''}>上一页</button>
+                <span class="page-info">第 ${current} / ${totalPages} 页，共 ${total} 条</span>
+                <button onclick="loadUsers(${current + 1})" ${current === totalPages ? 'disabled' : ''}>下一页</button>
+                <button onclick="loadUsers(${totalPages})" ${current === totalPages ? 'disabled' : ''}>末页</button>
+            `;
+        }
+
+        function searchUsers() {
+            userSearchKeyword = document.getElementById('userSearchInput').value.trim();
+            loadUsers(1);
+        }
+
+        function openUserModal(id = null) {
+            const modal = document.getElementById('userModal');
+            const form = document.getElementById('userForm');
+            const title = document.getElementById('userModalTitle');
+            
+            form.reset();
+            document.getElementById('userId').value = '';
+            
+            if (id) {
+                title.textContent = '编辑用户';
+                fetch(`/admin/user/${id}`, {
+                    credentials: 'include'
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const user = data.data;
+                            document.getElementById('userId').value = user.id;
+                            document.getElementById('userUsername').value = user.username || '';
+                            document.getElementById('userEmail').value = user.email || '';
+                            document.getElementById('userPhone').value = user.phone || '';
+                            document.getElementById('userStatus').value = user.status || '正常';
+                        } else {
+                            alert('加载用户信息失败：' + data.message);
+                        }
+                    });
+            } else {
+                title.textContent = '添加用户';
+            }
+            modal.classList.add('active');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userId = document.getElementById('userId').value;
+            const formData = {
+                username: document.getElementById('userUsername').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                phone: document.getElementById('userPhone').value.trim(),
+                status: document.getElementById('userStatus').value
+            };
+            
+            if (!formData.username) {
+                alert('用户名不能为空！');
+                return;
+            }
+            
+            if (userId) {
+                formData.id = parseInt(userId);
+                // 编辑时，如果密码不为空才更新密码
+                const password = document.getElementById('userPassword').value.trim();
+                if (password) {
+                    formData.password = password;
+                }
+            } else {
+                // 新增用户必须设置密码
+                const password = document.getElementById('userPassword').value.trim();
+                if (!password) {
+                    alert('新增用户必须设置密码！');
+                    return;
+                }
+                formData.password = password;
+            }
+            
+            const url = userId ? '/admin/user/update' : '/admin/user/add';
+            const method = userId ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('操作成功！');
+                    closeUserModal();
+                    loadUsers(currentUserPage);
+                } else {
+                    alert('操作失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('操作失败，请检查后端服务');
+            });
+        });
+
+        function editUser(id) {
+            openUserModal(id);
+        }
+
+        function deleteUser(id) {
+            if (!confirm('确定要删除这个用户吗？')) return;
+            fetch(`/admin/user/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('删除成功！');
+                    loadUsers(currentUserPage);
+                } else {
+                    alert('删除失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('删除失败，请检查后端服务');
+            });
+        }
+
+        // ========== 视频管理 ==========
+        function loadVideos(page = 1) {
+            currentVideoPage = page;
+            const keyword = videoSearchKeyword ? `&keyword=${encodeURIComponent(videoSearchKeyword)}` : '';
+            fetch(`/admin/video/list?current=${page}&size=${pageSize}${keyword}`, {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        renderVideoTable(data.data);
+                        renderVideoPagination(data.total, page);
+                    } else {
+                        alert('加载视频列表失败：' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('加载视频列表失败，请检查后端服务是否启动');
+                });
+        }
+
+        function renderVideoTable(videos) {
+            const tbody = document.getElementById('videoTableBody');
+            if (videos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = videos.map(video => `
+                <tr>
+                    <td>${video.id || ''}</td>
+                    <td>${video.title || ''}</td>
+                    <td>${video.author || ''}</td>
+                    <td>${video.category || ''}</td>
+                    <td>${video.duration || ''}</td>
+                    <td>${video.playCount || 0}</td>
+                    <td>${video.createTime ? new Date(video.createTime).toLocaleString('zh-CN') : ''}</td>
+                    <td><span class="status-badge ${video.status === '已发布' ? 'status-active' : 'status-inactive'}">${video.status || '待审核'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-edit" onclick="editVideo(${video.id})">编辑</button>
+                            ${video.status === '已发布' ? 
+                                `<button class="btn-sm" style="background: #ff9800; color: white;" onclick="toggleVideoStatus(${video.id}, '已下架')">下架</button>` :
+                                (video.status === '已下架' || video.status === '待审核' ?
+                                    `<button class="btn-sm" style="background: #4caf50; color: white;" onclick="toggleVideoStatus(${video.id}, '已发布')">上架</button>` :
+                                    `<button class="btn-sm" style="background: #4caf50; color: white;" onclick="toggleVideoStatus(${video.id}, '已发布')">上架</button>`
+                                )
+                            }
+                            <button class="btn-sm btn-delete" onclick="deleteVideo(${video.id})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderVideoPagination(total, current) {
+            const totalPages = Math.ceil(total / pageSize);
+            const pagination = document.getElementById('videoPagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            pagination.innerHTML = `
+                <button onclick="loadVideos(1)" ${current === 1 ? 'disabled' : ''}>首页</button>
+                <button onclick="loadVideos(${current - 1})" ${current === 1 ? 'disabled' : ''}>上一页</button>
+                <span class="page-info">第 ${current} / ${totalPages} 页，共 ${total} 条</span>
+                <button onclick="loadVideos(${current + 1})" ${current === totalPages ? 'disabled' : ''}>下一页</button>
+                <button onclick="loadVideos(${totalPages})" ${current === totalPages ? 'disabled' : ''}>末页</button>
+            `;
+        }
+
+        function searchVideos() {
+            videoSearchKeyword = document.getElementById('videoSearchInput').value.trim();
+            loadVideos(1);
+        }
+
+        function openVideoModal(id = null) {
+            const modal = document.getElementById('videoModal');
+            const form = document.getElementById('videoForm');
+            const title = document.getElementById('videoModalTitle');
+            
+            form.reset();
+            document.getElementById('videoId').value = '';
+            
+            if (id) {
+                title.textContent = '编辑视频';
+                fetch(`/admin/video/${id}`, {
+                    credentials: 'include'
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const video = data.data;
+                            document.getElementById('videoId').value = video.id;
+                            document.getElementById('videoTitle').value = video.title || '';
+                            document.getElementById('videoAuthor').value = video.author || '';
+                            document.getElementById('videoCategory').value = video.category || '';
+                            document.getElementById('videoDuration').value = video.duration || '';
+                            document.getElementById('videoPlayCount').value = video.playCount || 0;
+                            document.getElementById('videoStatus').value = video.status || '已发布';
+                            document.getElementById('videoCoverUrl').value = video.coverUrl || '';
+                            document.getElementById('videoVideoUrl').value = video.videoUrl || '';
+                            document.getElementById('videoDescription').value = video.description || '';
+                        } else {
+                            alert('加载视频信息失败：' + data.message);
+                        }
+                    });
+            } else {
+                title.textContent = '上传视频';
+            }
+            modal.classList.add('active');
+        }
+
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.remove('active');
+        }
+
+        document.getElementById('videoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const videoId = document.getElementById('videoId').value;
+            const formData = {
+                title: document.getElementById('videoTitle').value,
+                author: document.getElementById('videoAuthor').value,
+                category: document.getElementById('videoCategory').value,
+                duration: document.getElementById('videoDuration').value,
+                playCount: parseInt(document.getElementById('videoPlayCount').value) || 0,
+                status: document.getElementById('videoStatus').value,
+                coverUrl: document.getElementById('videoCoverUrl').value,
+                videoUrl: document.getElementById('videoVideoUrl').value,
+                description: document.getElementById('videoDescription').value
+            };
+            
+            if (videoId) {
+                formData.id = parseInt(videoId);
+            }
+            
+            const url = videoId ? '/admin/video/update' : '/admin/video/add';
+            const method = videoId ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('操作成功！');
+                    closeVideoModal();
+                    loadVideos(currentVideoPage);
+                } else {
+                    alert('操作失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('操作失败，请检查后端服务');
+            });
+        });
+
+        function editVideo(id) {
+            openVideoModal(id);
+        }
+
+        function deleteVideo(id) {
+            if (!confirm('确定要删除这个视频吗？')) return;
+            fetch(`/admin/video/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        alert('删除成功！');
+                        loadVideos(currentVideoPage);
+                    } else {
+                        alert('删除失败：' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('删除失败，请检查后端服务');
+                });
+        }
+
+        // 视频上下架功能
+        function toggleVideoStatus(id, status) {
+            const action = status === '已发布' ? '上架' : '下架';
+            if (!confirm(`确定要${action}这个视频吗？`)) return;
+            
+            fetch(`/admin/video/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ status: status })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert(`${action}成功！`);
+                    // 自动刷新视频列表，实现数据联动
+                    loadVideos(currentVideoPage);
+                } else {
+                    alert(`${action}失败：` + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert(`${action}失败，请检查后端服务`);
+            });
+        }
+
+        // ========== 系统设置 ==========
+        function loadAdminInfo() {
+            fetch('/admin/admin/info', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        const admin = data.data;
+                        document.getElementById('adminUsername').value = admin.username || '';
+                    } else {
+                        console.log('加载管理员信息失败：' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                });
+        }
+
+        document.getElementById('adminSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const passwordConfirm = document.getElementById('adminPasswordConfirm').value;
+            
+            if (password && password !== passwordConfirm) {
+                alert('两次输入的密码不一致！');
+                return;
+            }
+            
+            const formData = { username };
+            if (password) {
+                formData.password = password;
+            }
+            
+            fetch('/admin/admin/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('设置保存成功！');
+                    document.getElementById('adminPassword').value = '';
+                    document.getElementById('adminPasswordConfirm').value = '';
+                } else {
+                    alert('保存失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('保存失败，请检查后端服务');
+            });
+        });
+
+        // ========== 侧边栏菜单切换 ==========
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                
+                document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+                
+                if (section === 'users') {
+                    document.getElementById('users-section').classList.remove('hidden');
+                    // 切换菜单时自动刷新用户列表，确保数据联动
+                    loadUsers(currentUserPage);
+                } else if (section === 'videos') {
+                    document.getElementById('videos-section').classList.remove('hidden');
+                    // 切换菜单时自动刷新视频列表，确保数据联动
+                    loadVideos(currentVideoPage);
+                } else if (section === 'settings') {
+                    document.getElementById('settings-section').classList.remove('hidden');
+                    loadAdminInfo();
+                }
+            });
+        });
+
+        // 管理员退出登录
+        function logoutAdmin() {
+            if (!confirm('确定要退出登录吗？')) return;
+            fetch('/api/admin/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('退出成功！');
+                    window.location.href = 'admin-login.html';
+                } else {
+                    alert('退出失败：' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                window.location.href = 'admin-login.html';
+            });
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const userModal = document.getElementById('userModal');
+            const videoModal = document.getElementById('videoModal');
+            if (event.target === userModal) {
+                closeUserModal();
+            }
+            if (event.target === videoModal) {
+                closeVideoModal();
+            }
+        }
+    </script>
+</body>
+</html>
