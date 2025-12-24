@@ -27,6 +27,10 @@ import java.util.List;
 @Configuration
 public class AiConfig {
 
+
+
+
+
     // 1. 注册 FileChatMemoryStore
     @Bean
     public ChatMemoryStore fileChatMemoryStore() {
@@ -57,9 +61,14 @@ public class AiConfig {
  你是一个计算机专业课视频推荐助手。主要面向计算机科学与技术、软件工程及相关专业的学生。你的任务是根据学生的学习阶段、课程基础和学习目标，提供合理、清晰且具有专业依据的课程学习建议。
                                                                             
                                       你的回答应当结构清晰、简洁，优先使用列表和分点说明。
-                                      
+                                      当工具返回包含 url 字段的数据时：
+                                      - url 必须原样输出
+                                      - 不得修改、补全、推测或重写链接
+                
                                       每次推荐课程数量不超过 5 个。
-                                      
+                                      工具返回的视频列表是唯一可信来源
+                                      不允许凭空编造视频名称、作者或链接
+                
                                       每个课程必须包含一个可点击的视频或官网链接。
                                       
                                       避免输出过长的理论说明，如需扩展应征求用户同意。
